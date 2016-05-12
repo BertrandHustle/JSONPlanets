@@ -1,16 +1,36 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.h2.tools.Server;
 import spark.Spark;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws SQLException{
+
+        //creates server
+        Server server = Server.createTcpServer("-baseDir", "./data").start();
+
+        //creates connection
+        String jdbcUrl = "jdbc:h2:" + server.getURL() + "/main";
+        System.out.println(jdbcUrl);
+        Connection connection = DriverManager.getConnection(jdbcUrl, "", null);
+
+        //creates/configures web service
+        Service service =  new Service(connection);
+
+        //init database
+        service.initDatabase();
 
         Spark.get(
-                "/planets",
+                //change to "/planets" later?
+                "/",
                 (request, response) -> {
                     // returns an arraylist of all planets
-                    return null;
+                    return "test";
                 }
         );
 
