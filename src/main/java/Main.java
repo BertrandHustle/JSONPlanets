@@ -45,6 +45,7 @@ public class Main {
 
                     // queryParam for id
                     int id = Integer.parseInt(request.queryParams("id"));
+                    return id;
 
                 }
         );

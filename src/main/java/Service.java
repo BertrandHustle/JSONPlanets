@@ -15,8 +15,8 @@ public class Service {
     //init database
     public void initDatabase() throws SQLException {
         Statement statement = connection.createStatement();
-        statement.execute("CREATE TABLE IF NOT EXISTS planet (id IDENTITY, name STRING, radius INT, supportsLife BOOLEAN, distanceFromSun DOUBLE)");
-        statement.execute("CREATE TABLE IF NOT EXISTS moon (id IDENTITY, name STRING, color STRING, planetId INT)");
+        statement.execute("CREATE TABLE IF NOT EXISTS planet (id IDENTITY, name VARCHAR, radius INT, supportsLife BOOLEAN, distanceFromSun DOUBLE)");
+        statement.execute("CREATE TABLE IF NOT EXISTS moon (id IDENTITY, name VARCHAR, color VARCHAR, planetId INT)");
 
     }
 
