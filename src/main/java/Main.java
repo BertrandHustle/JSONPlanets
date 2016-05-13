@@ -6,6 +6,7 @@ import spark.Spark;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -30,29 +31,20 @@ public class Main {
                 "/",
                 (request, response) -> {
                     // returns an arraylist of all planets
-                    return "test";
+                    ArrayList<Planet> planets = new ArrayList<>();
+                    planets = service.getPlanets();
+
+                    Gson gson = new GsonBuilder().create();
+                    return gson.toJson(planets);
                 }
         );
 
         Spark.get(
                 "/planet",
                 (request, response) -> {
-                    // queryParam for id?
-                    // or maybe a param like :name and request.params(":name") ?
 
-                    Planet planet = new Planet();
-                    planet.name = request.params(":name");
-                    planet.distanceFromSun = 1;
-                    planet.radius = 6387; // km
-                    planet.supportsLife = true;
-
-                    Moon moon = new Moon();
-                    moon.name = "Luna";
-
-                    planet.moons.add(moon);
-
-                    Gson gson = new GsonBuilder().create();
-                    return gson.toJson(planet);
+                    // queryParam for id
+                    int id = Integer.parseInt(request.queryParams("id"));
 
                 }
         );
@@ -60,11 +52,22 @@ public class Main {
         Spark.post(
                 "/planet",
                 (request, response) -> {
-                    String planetJson = request.queryParams("planet");
-                    Gson gson = new GsonBuilder().create();
-                    Planet planet = gson.fromJson(planetJson, Planet.class);
 
-                    return "";
+                    Moon moon = new Moon();
+                    moon.name = "Luna";
+
+                    String json = "{\n" +
+                            "  \"name\": \"Earth\",\n" +
+                            "  \"radius\": \"6387\",\n" +
+                            "  \"distanceFromSun\": \"1\",\n" +
+                            "  \"supportsLife\": \"true\"\n" +
+                            "}";
+
+                    Planet planet = service.parsePlanet(json);
+
+                    planet.moons.add(moon);
+
+                    return planet;
                 }
 
         );
