@@ -45,13 +45,16 @@ public class Main {
 
                     // queryParam for id
                     int id = Integer.parseInt(request.queryParams("id"));
-                    return id;
+                    Planet planet = service.getPlanet(id);
+
+                    Gson gson = new GsonBuilder().create();
+                    return gson.toJson(planet);
 
                 }
         );
 
         Spark.post(
-                "/planet",
+                "/create-planet",
                 (request, response) -> {
 
                     Moon moon = new Moon();

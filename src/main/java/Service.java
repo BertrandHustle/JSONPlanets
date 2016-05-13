@@ -20,7 +20,7 @@ public class Service {
 
     }
 
-    //receives Planet data as JSON, parses into Planet and adds to database
+    //receives Planet data as JSON, parses into Planet and adds to database (USE JOIN HERE)
     public Planet parsePlanet(String json) throws SQLException{
 
         Gson gson = new GsonBuilder().create();
@@ -60,33 +60,34 @@ public class Service {
                     resultSet.getDouble("distanceFromSun")
 
             );
-
             planets.add(planet);
-
         }
-
         return planets;
-
     }
 
     //retrieves single Planet from id in query params
 
-    public Planet getPlanet (String id) throws SQLException {
+    public Planet getPlanet (int id) throws SQLException {
 
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet WHERE id=?");
-        statement.setString(1, id);
-
-        statement.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet WHERE ID = ?");
+        statement.setInt(1, id);
 
         ResultSet resultSet = statement.executeQuery();
-        Planet planet = new Planet(
+        ArrayList<Planet> singlePlanet = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Planet planet = new Planet(
                 resultSet.getString("name"),
                 resultSet.getInt("radius"),
                 resultSet.getBoolean("supportsLife"),
                 resultSet.getDouble("distanceFromSun")
-        );
+            );
 
-        return planet;
+            singlePlanet.add(planet);
+
+        }
+
+        return singlePlanet.get(0);
 
     }
 
