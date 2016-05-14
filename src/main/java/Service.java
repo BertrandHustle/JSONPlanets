@@ -1,8 +1,13 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 
 public class Service {
 
@@ -24,6 +29,15 @@ public class Service {
     public Planet parsePlanet(String json) throws SQLException{
 
         Gson gson = new GsonBuilder().create();
+
+        //may have to use a ridiculous delimiter here to remove moons and parse separately
+        //json.split("\t\"\\\"moons.*]\")
+
+
+        //parsing arraylist from json
+        Type listType = new TypeToken<Collection<Moon>>(){}.getType();
+        List<Moon>moons = new Gson().fromJson(json, listType);
+
         Planet planet = gson.fromJson(json, Planet.class);
 
         PreparedStatement statement = connection.prepareStatement("INSERT INTO planet VALUES (NULL, ?, ?, ?, ?)");
@@ -38,6 +52,20 @@ public class Service {
         ResultSet resultSet = statement.getGeneratedKeys();
         resultSet.next();
         planet.setId(resultSet.getInt(1));
+
+
+        //loops through moons, adds to moon table
+        for (Moon moon : moons) {
+
+            //sets moon id to match planet id
+            moon.setPlanetId(planet.id);
+
+            PreparedStatement statementM = connection.prepareStatement("INSERT INTO moon VALUES (NULL, ?, ?, ?)");
+            statementM.setString(1, moon.moonName);
+            statementM.setString(2, moon.color);
+            statementM.setInt(3, moon.planetId);
+
+        }
 
         return planet;
 
@@ -79,6 +107,7 @@ public class Service {
     }
 
     //retrieves single Planet from id in query params
+    //ADD MOONS TO THIS
 
     public Planet getPlanet (int id) throws SQLException {
 

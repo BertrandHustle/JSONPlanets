@@ -15,7 +15,6 @@ public class Planet {
         this.radius = radius;
         this.supportsLife = supportsLife;
         this.distanceFromSun = distanceFromSun;
-        this.moons = moons;
     }
 
     public String getName() {
@@ -48,6 +47,14 @@ public class Planet {
 
     public void setDistanceFromSun(double distanceFromSun) {
         this.distanceFromSun = distanceFromSun;
+    }
+
+    public ArrayList<Moon> getMoons() {
+        return moons;
+    }
+
+    public void setMoons(ArrayList<Moon> moons) {
+        this.moons = moons;
     }
 
     public void setId(int id) {

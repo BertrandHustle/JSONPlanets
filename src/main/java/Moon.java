@@ -10,4 +10,8 @@ public class Moon {
         this.color = color;
         this.planetId = planetId;
     }
+
+    public void setPlanetId(int planetId) {
+        this.planetId = planetId;
+    }
 }

@@ -59,19 +59,28 @@ public class Main {
 
                     //hard-coded for example purposes
 
-                    Moon moon = new Moon("Luna", "white", 1);
+                    //Moon moon = new Moon("Luna", "white", 1);
 
-                    String json = "{\n" +
-                            "  \"name\": \"Earth\",\n" +
-                            "  \"radius\": \"6387\",\n" +
-                            "  \"distanceFromSun\": \"1\",\n" +
-                            "  \"supportsLife\": \"true\"\n" +
-                            //"  \"moons\": \"null\"\n" +
-                            "}";
+                    String json = "[\n" +
+                            "{\n" +
+                            "name: \"Mars\",\n" +
+                            "radius: 500,\n" +
+                            "supportsLife: false,\n" +
+                            "distanceFromSun: 3,\n" +
+                            "id: 0,\n" +
+                            "moons: [\n" +
+                            "{\n" +
+                            "moonName: \"Europa\",\n" +
+                            "color: \"blue\",\n" +
+                            "planetId: 1\n" +
+                            "}\n" +
+                            "]\n" +
+                            "}\n" +
+                            "]";
 
                     Planet planet = service.parsePlanet(json);
 
-                    planet.moons.add(moon);
+                    //planet.moons.add(moon);
 
                     return planet;
 
