@@ -53,18 +53,20 @@ public class Main {
                 }
         );
 
-        Spark.post(
+        Spark.get(
                 "/create-planet",
                 (request, response) -> {
 
-                    Moon moon = new Moon();
-                    moon.name = "Luna";
+                    //hard-coded for example purposes
+
+                    Moon moon = new Moon("Luna", "white", 1);
 
                     String json = "{\n" +
                             "  \"name\": \"Earth\",\n" +
                             "  \"radius\": \"6387\",\n" +
                             "  \"distanceFromSun\": \"1\",\n" +
                             "  \"supportsLife\": \"true\"\n" +
+                            //"  \"moons\": \"null\"\n" +
                             "}";
 
                     Planet planet = service.parsePlanet(json);
@@ -72,6 +74,7 @@ public class Main {
                     planet.moons.add(moon);
 
                     return planet;
+
                 }
 
         );

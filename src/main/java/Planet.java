@@ -1,4 +1,3 @@
-import java.sql.Array;
 import java.util.ArrayList;
 
 
@@ -9,15 +8,14 @@ public class Planet {
     boolean supportsLife;
     double distanceFromSun;
     int id;
-
     ArrayList<Moon> moons = new ArrayList<>();
-
 
     public Planet(String name, int radius, boolean supportsLife, double distanceFromSun) {
         this.name = name;
         this.radius = radius;
         this.supportsLife = supportsLife;
         this.distanceFromSun = distanceFromSun;
+        this.moons = moons;
     }
 
     public String getName() {
@@ -50,14 +48,6 @@ public class Planet {
 
     public void setDistanceFromSun(double distanceFromSun) {
         this.distanceFromSun = distanceFromSun;
-    }
-
-    public ArrayList<Moon> getMoons() {
-        return moons;
-    }
-
-    public void setMoons(ArrayList<Moon> moons) {
-        this.moons = moons;
     }
 
     public void setId(int id) {

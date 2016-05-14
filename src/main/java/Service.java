@@ -16,7 +16,7 @@ public class Service {
     public void initDatabase() throws SQLException {
         Statement statement = connection.createStatement();
         statement.execute("CREATE TABLE IF NOT EXISTS planet (id IDENTITY, name VARCHAR, radius INT, supportsLife BOOLEAN, distanceFromSun DOUBLE)");
-        statement.execute("CREATE TABLE IF NOT EXISTS moon (id IDENTITY, name VARCHAR, color VARCHAR, planetId INT)");
+        statement.execute("CREATE TABLE IF NOT EXISTS moon (id IDENTITY, moonName VARCHAR, color VARCHAR, planetId INT)");
 
     }
 
@@ -46,7 +46,9 @@ public class Service {
     //returns arraylist of all planets
     public ArrayList<Planet> getPlanets() throws SQLException{
 
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet");
+        //inner join of planets on moons
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet INNER JOIN moon ON moon.planetId = planet.id");
+
         ResultSet resultSet = statement.executeQuery();
         ArrayList<Planet> planets = new ArrayList<>();
 
@@ -61,6 +63,17 @@ public class Service {
 
             );
             planets.add(planet);
+
+            Moon moon = new Moon(
+
+                    resultSet.getString("moonName"),
+                    resultSet.getString("color"),
+                    resultSet.getInt("planetId")
+
+            );
+
+            planet.moons.add(moon);
+
         }
         return planets;
     }
