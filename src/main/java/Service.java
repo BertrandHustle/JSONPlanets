@@ -1,11 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 
@@ -59,12 +55,11 @@ public class Service {
 
             //sets moon id to match planet id
             moon.setPlanetId(planet.id);
-
             PreparedStatement statementM = connection.prepareStatement("INSERT INTO moon VALUES (NULL, ?, ?, ?)");
             statementM.setString(1, moon.moonName);
             statementM.setString(2, moon.color);
             statementM.setInt(3, moon.planetId);
-            planet.moons.add(moon);
+            statementM.executeUpdate();
 
         }
 
@@ -104,8 +99,9 @@ public class Service {
             planet.moons.add(moon);
 
         }
-        return planets;
-    }
+            return planets;
+        }
+
 
     //retrieves single Planet from id in query params
 
@@ -129,9 +125,6 @@ public class Service {
             singlePlanet.add(planet);
 
         }
-
-        PreparedStatement statementM = connection.prepareStatement("SELECT * FROM planet INNER JOIN moon ON moon.planetId = planet.id WHERE planet.id = ?");
-        statement.setInt(1, id);
 
         ResultSet resultSetM = statement.executeQuery();
         ArrayList<Moon> moons = new ArrayList<>();

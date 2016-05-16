@@ -53,36 +53,29 @@ public class Main {
                 }
         );
 
-        Spark.get(
+        Spark.post(
                 "/create-planet",
                 (request, response) -> {
 
                     //hard-coded for example purposes
 
-                    //Moon moon = new Moon("Luna", "white", 1);
+                    Planet planet = new Planet("Venus", 800, false, 2.3);
+                    Moon moon = new Moon("Luna", "white", 1);
+                    Moon moon2 = new Moon("Casiopia", "black", 1);
 
-                    String json = "[\n" +
-                            "{\n" +
-                            "name: \"Mars\",\n" +
-                            "radius: 500,\n" +
-                            "supportsLife: false,\n" +
-                            "distanceFromSun: 3,\n" +
-                            "id: 0,\n" +
-                            "moons: [\n" +
-                            "{\n" +
-                            "moonName: \"Europa\",\n" +
-                            "color: \"blue\",\n" +
-                            "planetId: 1\n" +
-                            "}\n" +
-                            "]\n" +
-                            "}\n" +
-                            "]";
+                    planet.moons.add(moon);
+                    planet.moons.add(moon2);
 
-                    Planet planet = service.parsePlanet(json);
+                    Gson gson = new GsonBuilder().create();
 
-                    //planet.moons.add(moon);
+                    String json = gson.toJson(planet);
 
-                    return planet;
+                    System.out.println(json);
+                    int i = 0;
+
+                    Planet newPlanet = service.parsePlanet(json);
+
+                    return newPlanet;
 
                 }
 
