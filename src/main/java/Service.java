@@ -26,17 +26,16 @@ public class Service {
     }
 
     //receives Planet data as JSON, parses into Planet and adds to database (USE JOIN HERE)
-    public Planet parsePlanet(String json) throws SQLException{
+    public Planet parsePlanet(String json) throws SQLException {
 
         Gson gson = new GsonBuilder().create();
 
         //may have to use a ridiculous delimiter here to remove moons and parse separately
         //json.split("\t\"\\\"moons.*]\")
 
-
         //parsing arraylist from json
-        Type listType = new TypeToken<Collection<Moon>>(){}.getType();
-        List<Moon>moons = new Gson().fromJson(json, listType);
+        //Type listType = new TypeToken<Collection<Moon>>(){}.getType();
+        //List<Moon>moons = new Gson().fromJson(json, listType);
 
         Planet planet = gson.fromJson(json, Planet.class);
 
@@ -53,8 +52,9 @@ public class Service {
         resultSet.next();
         planet.setId(resultSet.getInt(1));
 
+        List<Moon> moons = planet.moons;
 
-        //loops through moons, adds to moon table
+        //loops through moons, adds to moon table and planet object
         for (Moon moon : moons) {
 
             //sets moon id to match planet id
@@ -64,6 +64,7 @@ public class Service {
             statementM.setString(1, moon.moonName);
             statementM.setString(2, moon.color);
             statementM.setInt(3, moon.planetId);
+            planet.moons.add(moon);
 
         }
 
@@ -72,7 +73,7 @@ public class Service {
     }
 
     //returns arraylist of all planets
-    public ArrayList<Planet> getPlanets() throws SQLException{
+    public ArrayList<Planet> getPlanets() throws SQLException {
 
         //inner join of planets on moons
         PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet INNER JOIN moon ON moon.planetId = planet.id");
@@ -80,7 +81,7 @@ public class Service {
         ResultSet resultSet = statement.executeQuery();
         ArrayList<Planet> planets = new ArrayList<>();
 
-        while(resultSet.next()){
+        while (resultSet.next()) {
 
             Planet planet = new Planet(
 
@@ -107,30 +108,51 @@ public class Service {
     }
 
     //retrieves single Planet from id in query params
-    //ADD MOONS TO THIS
 
-    public Planet getPlanet (int id) throws SQLException {
+    public Planet getPlanet(int id) throws SQLException {
 
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet WHERE ID = ?");
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet INNER JOIN moon ON moon.planetId = planet.id WHERE planet.id = ?");
         statement.setInt(1, id);
 
         ResultSet resultSet = statement.executeQuery();
         ArrayList<Planet> singlePlanet = new ArrayList<>();
 
-            while (resultSet.next()) {
-                Planet planet = new Planet(
-                resultSet.getString("name"),
-                resultSet.getInt("radius"),
-                resultSet.getBoolean("supportsLife"),
-                resultSet.getDouble("distanceFromSun")
+        while (resultSet.next()) {
+
+            Planet planet = new Planet(
+                    resultSet.getString("name"),
+                    resultSet.getInt("radius"),
+                    resultSet.getBoolean("supportsLife"),
+                    resultSet.getDouble("distanceFromSun")
             );
 
             singlePlanet.add(planet);
 
         }
 
+        PreparedStatement statementM = connection.prepareStatement("SELECT * FROM planet INNER JOIN moon ON moon.planetId = planet.id WHERE planet.id = ?");
+        statement.setInt(1, id);
+
+        ResultSet resultSetM = statement.executeQuery();
+        ArrayList<Moon> moons = new ArrayList<>();
+
+        while (resultSetM.next()) {
+            Moon moon = new Moon(
+                    resultSetM.getString("moonName"),
+                    resultSetM.getString("color"),
+                    resultSetM.getInt("planetId")
+            );
+
+            moons.add(moon);
+
+        }
+
+        for (Moon moon : moons) {
+            singlePlanet.get(0).moons.add(moon);
+        }
+
         return singlePlanet.get(0);
 
     }
-
 }
+
