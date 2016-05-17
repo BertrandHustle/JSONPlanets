@@ -71,13 +71,15 @@ public class Service {
     public ArrayList<Planet> getPlanets() throws SQLException {
 
         //inner join of planets on moons
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet INNER JOIN moon ON moon.planetId = planet.id");
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM planet LEFT JOIN moon ON moon.planetId = planet.id");
 
         ResultSet resultSet = statement.executeQuery();
         ArrayList<Planet> planets = new ArrayList<>();
+        ArrayList<String> planetNames = new ArrayList<>();
 
         while (resultSet.next()) {
 
+            //builds planet
             Planet planet = new Planet(
 
                     resultSet.getString("name"),
@@ -86,21 +88,40 @@ public class Service {
                     resultSet.getDouble("distanceFromSun")
 
             );
-            planets.add(planet);
 
-            Moon moon = new Moon(
+            planet.setId(resultSet.getInt("id"));
 
-                    resultSet.getString("moonName"),
-                    resultSet.getString("color"),
-                    resultSet.getInt("planetId")
 
-            );
+            //builds moon and adds to planet
+            //put this in its own loop?
 
-            planet.moons.add(moon);
+            String moonName = resultSet.getString("moonName");
+            String color = resultSet.getString("color");
+            int planetId = resultSet.getInt("planetId");
+
+            if (planetId != 0) {
+                Moon moon = new Moon(moonName, color, planetId);
+                planet.moons.add(moon);
+            }
+
+            for (Planet planetMoonChecks : planets){
+                if (planetMoonChecks.getId() == planetId){
+                    Moon moon = new Moon(moonName, color, planetId);
+                    planetMoonChecks.moons.add(moon);
+                }
+            }
+
+            //checks if planet has already been made
+            if (!planetNames.contains(planet.name)) {
+                planets.add(planet);
+                planetNames.add(planet.getName());
+            }
+
 
         }
-            return planets;
-        }
+
+        return planets;
+    }
 
 
     //retrieves single Planet from id in query params
